@@ -283,6 +283,28 @@ This is a community-driven project. Contributions are welcome! Please see:
 
 The repository includes an MCP (Model Context Protocol) Server for searching and installing resources directly from this repository. Docker is required to run the server.
 
+## Cursor Cloud specific instructions
+
+This is a content repository with a Node.js build pipeline and an Astro static website. No databases, Docker, or external services are required.
+
+### Services
+
+| Service | Command | Notes |
+|---------|---------|-------|
+| Build (README + marketplace) | `npm run build` | Generates `README.md` and `.github/plugin/marketplace.json` |
+| Plugin validation | `npm run plugin:validate` | Validates all 52 plugin manifests |
+| Skill validation | `npm run skill:validate` | Validates all 245 skill folders |
+| Website dev server | `npm run website:dev` | Astro dev server on port 4321; also generates website data |
+| Website build | `npm run website:build` | Full static build (runs `build` + `website:data` + Astro build) |
+| Line endings fix | `bash scripts/fix-line-endings.sh` | Must run before committing to normalize CRLF to LF |
+
+### Non-obvious caveats
+
+- The website has its own `package.json` in `website/`. Dependencies must be installed separately: `npm ci` at root AND `npm ci` in `website/`.
+- `npm run website:dev` calls `npm run website:data` first to generate JSON data files from the markdown content. If you only change markdown content (agents, skills, etc.), restart the dev server to pick up changes.
+- PRs must target the `staged` branch, not `main`.
+- Always run `bash scripts/fix-line-endings.sh` before committing.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details
