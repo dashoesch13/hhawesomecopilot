@@ -1,9 +1,13 @@
 name: "Copilot Setup Steps"
 
-# This workflow configures the environment for GitHub Copilot Agent with gh-aw MCP server
+# Preinstall tools and dependencies for GitHub Copilot cloud agent; also validates on PR/push.
+# See: https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/customizing-the-development-environment-for-copilot-coding-agent
 on:
   workflow_dispatch:
   push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
     paths:
       - .github/workflows/copilot-setup-steps.yml
 
@@ -20,6 +24,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "20"
+          cache: npm
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Build (generate README and marketplace)
+        run: npm run build
       - name: Install gh-aw extension
         uses: github/gh-aw/actions/setup-cli@32b3a711a9ee97d38e3989c90af0385aff0066a7 # v0.57.2
         with:

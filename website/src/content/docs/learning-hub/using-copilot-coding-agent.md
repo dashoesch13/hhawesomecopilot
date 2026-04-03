@@ -3,7 +3,7 @@ title: 'Using the Copilot Coding Agent'
 description: 'Learn how to use GitHub Copilot coding agent to autonomously work on issues, generate pull requests, and automate development tasks.'
 authors:
   - GitHub Copilot Learning Hub Team
-lastUpdated: 2026-02-26
+lastUpdated: 2026-04-03
 estimatedReadingTime: '12 minutes'
 tags:
   - coding-agent
@@ -51,19 +51,42 @@ The agent works in its own branch, in an isolated environment. It can't merge co
 
 ## Setting Up the Environment
 
-The coding agent needs to know how to set up your project. Define this in `.github/copilot-setup-steps.yml`:
+The coding agent needs to know how to set up your project. Define this in a GitHub Actions workflow at [`.github/workflows/copilot-setup-steps.yml`](https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/customizing-the-development-environment-for-copilot-coding-agent). The workflow must define a single job named `copilot-setup-steps`; put your install and build steps under that job. The file must be merged to your repository **default branch** before Copilot will use it.
 
 ```yaml
-# .github/copilot-setup-steps.yml
-steps:
-  - name: Install dependencies
-    run: npm ci
+# .github/workflows/copilot-setup-steps.yml
+name: "Copilot Setup Steps"
 
-  - name: Build the project
-    run: npm run build
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
 
-  - name: Verify tests pass
-    run: npm test
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Verify tests pass
+        run: npm test
 ```
 
 ### What to Include
@@ -78,35 +101,54 @@ Think of this file as bootstrapping instructions for a new developer joining the
 
 **Test command**: Run the test suite so the agent can validate its changes don't break existing functionality.
 
-**Example for a Python project**:
+**Example for a Python project** (reuse the same `name` and `on` triggers as in the full workflow example above):
 ```yaml
-steps:
-  - name: Set up Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: '3.12'
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
 
-  - name: Install dependencies
-    run: pip install -r requirements.txt
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-  - name: Run tests
-    run: pytest
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest
 ```
 
-**Example for a multi-language project**:
+**Example for a multi-language project** (same `name` and `on` as above):
 ```yaml
-steps:
-  - name: Install Node.js dependencies
-    run: npm ci
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
 
-  - name: Install Python dependencies
-    run: pip install -r requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
 
-  - name: Build frontend
-    run: npm run build
+      - name: Install Node.js dependencies
+        run: npm ci
 
-  - name: Run all tests
-    run: npm test && pytest
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Run all tests
+        run: npm test && pytest
 ```
 
 ## Assigning Work to the Coding Agent
@@ -350,7 +392,7 @@ See [Automating with Hooks](../automating-with-hooks/) for configuration details
 
 ### Setting Up for Success
 
-- **Invest in `copilot-setup-steps.yml`**: A reliable setup means the agent can build and test confidently. If tests are flaky, the agent will struggle.
+- **Invest in `.github/workflows/copilot-setup-steps.yml`**: A reliable setup means the agent can build and test confidently. If tests are flaky, the agent will struggle.
 - **Add comprehensive instructions**: The agent reads your `.github/instructions/` files. The more context you provide about patterns and conventions, the better the output.
 - **Create skills for repeatable tasks**: If your team frequently does a specific type of work (migrations, API endpoints, test suites), create a skill with step-by-step guidance the agent can follow automatically.
 - **Use custom agents for specialized roles**: Create focused agent profiles for different types of work — a security reviewer, a test specialist, or an infrastructure expert.
@@ -403,7 +445,7 @@ A: Yes. You can specify which agent to use when assigning work — the coding ag
 
 ## Next Steps
 
-- **Set Up Your Environment**: Create `.github/copilot-setup-steps.yml` for your project
+- **Set Up Your Environment**: Create `.github/workflows/copilot-setup-steps.yml` for your project (see [GitHub Docs](https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/customizing-the-development-environment-for-copilot-coding-agent))
 - **Create Skills**: [Creating Effective Skills](../creating-effective-skills/) — Build skills the coding agent can use automatically
 - **Add Guardrails**: [Automating with Hooks](../automating-with-hooks/) — Ensure code quality in autonomous sessions
 - **Build Custom Agents**: [Building Custom Agents](../building-custom-agents/) — Create specialized agents for the coding agent to use
