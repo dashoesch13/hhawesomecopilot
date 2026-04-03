@@ -1,5 +1,7 @@
 # AGENTS.md
 
+This file follows the portable [AGENTS.md](https://agents.md/) convention: operational guidance for AI coding agents working in this repository. For a human-oriented overview and browse links, see [README.md](README.md).
+
 ## Project Overview
 
 The Awesome GitHub Copilot repository is a community-driven collection of custom agents and instructions designed to enhance GitHub Copilot experiences across various domains, languages, and use cases. The project includes:
@@ -9,7 +11,7 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 - **Skills** - Self-contained folders with instructions and bundled resources for specialized tasks
 - **Hooks** - Automated workflows triggered by specific events during development
 - **Workflows** - [Agentic Workflows](https://github.github.com/gh-aw) for AI-powered repository automation in GitHub Actions
-- **Plugins** - Installable packages that group related agents, commands, and skills around specific themes
+- **Plugins** - Installable packages that group related agents, commands, and skills around specific themes (each plugin declares metadata in `.github/plugin/plugin.json`)
 
 ## Repository Structure
 
@@ -20,8 +22,10 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 ├── skills/           # Agent Skills folders (each with SKILL.md and optional bundled assets)
 ├── hooks/            # Automated workflow hooks (folders with README.md + hooks.json)
 ├── workflows/        # Agentic Workflows (.md files for GitHub Actions automation)
-├── plugins/          # Installable plugin packages (folders with plugin.json)
+├── plugins/          # Plugin packages (each folder has .github/plugin/plugin.json + README.md)
+├── cookbook/         # Copy-paste recipes for Copilot APIs and patterns
 ├── docs/             # Documentation for different resource types
+├── website/          # Astro + Starlight site (optional local dev; not required for catalog changes)
 ├── eng/              # Build and automation scripts
 └── scripts/          # Utility scripts
 ```
@@ -49,6 +53,16 @@ npm run skill:validate
 
 # Create a new skill
 npm run skill:create -- --name <skill-name>
+```
+
+Optional — only when changing the public website (`website/`):
+
+```bash
+# Generate embedded data, then run the Astro dev server
+npm run website:dev
+
+# Production build (runs root build, regenerates site data, then astro build)
+npm run website:build
 ```
 
 ## Development Workflow
@@ -130,7 +144,7 @@ When adding a new agent, instruction, skill, hook, workflow, or plugin:
 **For Workflows:**
 1. Create a new `.md` file in `workflows/` with a descriptive name (e.g., `daily-issues-report.md`)
 2. Include frontmatter with `name` and `description`, plus agentic workflow fields (`on`, `permissions`, `safe-outputs`)
-3. Compile with `gh aw compile --validate` to verify it's valid
+3. Compile with `gh aw compile --validate --no-emit <your-workflow>.md` to verify it's valid (see [CONTRIBUTING.md](CONTRIBUTING.md#adding-agentic-workflows))
 4. Update the README.md by running: `npm run build`
 5. Verify the workflow appears in the generated README
 
