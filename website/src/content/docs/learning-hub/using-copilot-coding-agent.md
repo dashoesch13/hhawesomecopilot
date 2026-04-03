@@ -309,7 +309,7 @@ Skills are stored in a `skills/` subdirectory, with each skill in its own folder
 
 **Personal skills** (shared across all your projects):
 ```
-~/.copilot/
+~/.agents/
 └── skills/
     └── code-review-checklist/
         └── SKILL.md
