@@ -1,5 +1,7 @@
 # AGENTS.md
 
+This file is the [AGENTS.md](https://agents.md/) convention for this repository: operational guidance for AI coding agents working in this codebase (build, validation, and contribution rules). Human-oriented documentation lives primarily in [README.md](README.md) and [docs/](docs/).
+
 ## Project Overview
 
 The Awesome GitHub Copilot repository is a community-driven collection of custom agents and instructions designed to enhance GitHub Copilot experiences across various domains, languages, and use cases. The project includes:
@@ -15,15 +17,17 @@ The Awesome GitHub Copilot repository is a community-driven collection of custom
 
 ```
 .
-├── agents/           # Custom GitHub Copilot agent definitions (.agent.md files)
-├── instructions/     # Coding standards and guidelines (.instructions.md files)
-├── skills/           # Agent Skills folders (each with SKILL.md and optional bundled assets)
-├── hooks/            # Automated workflow hooks (folders with README.md + hooks.json)
-├── workflows/        # Agentic Workflows (.md files for GitHub Actions automation)
-├── plugins/          # Installable plugin packages (folders with plugin.json)
-├── docs/             # Documentation for different resource types
-├── eng/              # Build and automation scripts
-└── scripts/          # Utility scripts
+├── agents/         # Custom GitHub Copilot agent definitions (.agent.md files)
+├── instructions/   # Coding standards and guidelines (.instructions.md files)
+├── skills/         # Agent Skills folders (each with SKILL.md and optional bundled assets)
+├── hooks/          # Automated workflow hooks (folders with README.md + hooks.json)
+├── workflows/      # Agentic Workflows (.md files for GitHub Actions automation)
+├── plugins/        # Installable plugin packages (each with .github/plugin/plugin.json + README.md)
+├── cookbook/       # Copilot SDK recipes and examples
+├── website/        # Awesome Copilot documentation site (Astro)
+├── docs/           # Documentation for different resource types
+├── eng/            # Build and automation scripts
+└── scripts/        # Utility scripts
 ```
 
 ## Setup Commands
@@ -49,6 +53,10 @@ npm run skill:validate
 
 # Create a new skill
 npm run skill:create -- --name <skill-name>
+
+# Website (optional): generate data and run local dev server
+npm run website:data
+npm run website:dev
 ```
 
 ## Development Workflow
@@ -119,7 +127,7 @@ When adding a new agent, instruction, skill, hook, workflow, or plugin:
 
 **For Hooks:**
 1. Create a new folder in `hooks/` with a descriptive name
-2. Create `README.md` with proper frontmatter (name, description, hooks, tags)
+2. Create `README.md` with proper frontmatter (`name`, `description`, and optional `tags`)
 3. Create `hooks.json` with hook configuration following GitHub Copilot hooks spec
 4. Add any bundled scripts or assets to the folder
 5. Make scripts executable: `chmod +x script.sh`
@@ -279,9 +287,9 @@ This is a community-driven project. Contributions are welcome! Please see:
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards
 - [SECURITY.md](SECURITY.md) for security policies
 
-## MCP Server
+## MCP and discovery
 
-The repository includes an MCP (Model Context Protocol) Server for searching and installing resources directly from this repository. Docker is required to run the server.
+This catalog includes many MCP-focused agents, instructions, and skills. For search, install flows, and related tooling, use the [Tools](https://awesome-copilot.github.com/tools) section on the [Awesome Copilot website](https://awesome-copilot.github.com); the `website/` app in this repo powers that experience.
 
 ## License
 
